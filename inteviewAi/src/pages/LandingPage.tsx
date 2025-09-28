@@ -1,28 +1,45 @@
 import { BackgroundRippleEffect } from '@/components/ui/background-ripple-effect';
-import { Button } from '@/components/ui/button';
+import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-const LandingPage = () => {
-  const navigate = useNavigate();
 
+const LandingPage = () => {
+  const navigate=useNavigate();
   return (
-    <>
-      <BackgroundRippleEffect rows={40} cols={45} cellSize={50} />
-      <div className='relative '>
-        <div className='text-8xl text-white inline-block bg-clip-text font-extralight'> Welcome to Interview Ai</div>
-        <div className='pt-10 text-3xl shadow-4xl shadow-white'>
-          Let's Get You Hired !
-        </div>
-        <div className="flex justify-center items-center gap-5 mt-10">
-          <Button variant={'default'} className='bg-white hover:scale-110 hover:bg-blue-100 relative cursor-pointer' onClick={() => {
-            navigate('/Upload')
-          }}>Get Hired !</Button>
-          <Button variant={'default'} className='bg-white hover:scale-110 hover:bg-blue-100 relative cursor-pointer' onClick={() => {
-            navigate('/DashBoard')
-          }}> Hire Someone</Button>
-        </div>
-      </div>
-    </>
+    <div className="relative flex min-h-screen w-screen flex-col items-start justify-start overflow-hidden">
+    <BackgroundRippleEffect rows={40} cols={40} />
+    <nav className="bg-gray-800 p-4 text-white w-screen flex justify-center ">
+  <div className="container mx-auto flex items-center justify-center">
+    {/* Logo/Brand */}
+    <div className="text-xl font-bold">Interview Ai</div>
+
+    {/* Desktop Menu */}
+    {/* <div className="hidden space-x-4 md:flex text-xl">
+      <div className="hover:text-gray-400">Interview</div>
+      <div className="hover:text-gray-400">About</div>
+      <div className="hover:text-gray-400">Services</div>
+      <div className="hover:text-gray-400">Contact</div>
+    </div>
+     */}
+  </div>
+</nav>
+    <div className="mt-60 w-full">
+      <h2 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-primary md:text-4xl lg:text-7xl dark:text-dark-primary">
+        Interactive Background Boxes Ripple Effect
+      </h2>
+      <p className="relative z-10 mx-auto mt-4 max-w-xl text-center text-white dark:text-neutral-500">
+        Hover over the boxes above and click.To be used on backgrounds of hero
+        sections OR Call to Action sections. I beg you don&apos;t use it
+        everywhere.
+      </p>
+      <div className='flex justify-center mt-10 gap-4 text-black relative z-25'><Button size='large' className='hover:scale-105 border-none outline-none hover:text-black hover:border-none' onClick={()=>{
+          navigate('/interviewee')
+      }}>Give Interview !</Button>
+      <Button size='large' className='hover:scale-105 border-none outline-none hover:text-black hover:border-none hover:outline-none' onClick={()=>{
+          navigate('/interviewer')
+      }}>See DashBoard !</Button></div>
+    </div>
+  </div>
   );
 };
 

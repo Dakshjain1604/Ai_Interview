@@ -1,14 +1,20 @@
-import FileUpload from '@/components/ui/file-upload'
-import React from 'react'
+// UploadResume.tsx
+import React from "react";
+import FileUpload from "@/components/ui/file-upload";
 
-const UploadResume = () => {
-  return (
-    <div className='bg-background h-full w-full flex justify-center items-center'>
-        <div className='absolute z-20'>
-        <FileUpload />
-        </div>
-    </div>
-  )
+
+interface Props {
+  onUploaded: () => void;
 }
 
-export default UploadResume
+const UploadResume: React.FC<Props> = ({ onUploaded }) => {
+  return (
+    <div className="bg-background h-full w-full flex justify-center items-center">
+      <div className="absolute z-20">
+        <FileUpload onUploaded={onUploaded} />        
+      </div>
+    </div>
+  );
+};
+
+export default UploadResume;
