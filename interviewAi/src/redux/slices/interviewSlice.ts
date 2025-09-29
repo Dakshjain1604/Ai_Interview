@@ -1,7 +1,6 @@
-// src/redux/interviewSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
-import  type {PayloadAction} from "@reduxjs/toolkit"
- 
+import type { PayloadAction } from "@reduxjs/toolkit";
+
 export interface Question {
   text: string;
   level: "Easy" | "Medium" | "Hard";
@@ -16,6 +15,7 @@ export interface Candidate {
   answers: string[];
   score: number | null;
   summary: string;
+  completedAt?: string;
 }
 
 interface InterviewState {
@@ -29,7 +29,7 @@ const initialState: InterviewState = {
   candidates: [],
   currentCandidate: null,
   questions: [],
-questionsGenerated: false,
+  questionsGenerated: false,
 };
 
 const interviewSlice = createSlice({
@@ -39,6 +39,10 @@ const interviewSlice = createSlice({
     addCandidate: (state, action: PayloadAction<Candidate>) => {
       state.candidates.push(action.payload);
       state.currentCandidate = action.payload;
+    },
+    setQuestions: (state, action: PayloadAction<Question[]>) => {
+      state.questions = action.payload;
+      state.questionsGenerated = true;
     },
     updateAnswer: (
       state,
@@ -56,25 +60,31 @@ const interviewSlice = createSlice({
       if (state.currentCandidate) {
         state.currentCandidate.score = action.payload.score;
         state.currentCandidate.summary = action.payload.summary;
+        state.currentCandidate.completedAt = new Date().toISOString();
+        
+        // Update in candidates array
+        const index = state.candidates.findIndex(
+          c => c.id === state.currentCandidate!.id
+        );
+        if (index !== -1) {
+          state.candidates[index] = state.currentCandidate;
+        }
       }
     },
-    setQuestions: (state, action: PayloadAction<Question[]>) => {
-      state.questions = action.payload;
-      state.questionsGenerated = true;
-    },resetInterview: (state) => {
+    resetInterview: (state) => {
+      state.currentCandidate = null;
       state.questions = [];
       state.questionsGenerated = false;
-      state.currentCandidate = null;
     },
   },
 });
 
-export const { 
-  addCandidate, 
-  updateAnswer, 
-  finishInterview, 
-  setQuestions, 
-  resetInterview 
+export const {
+  addCandidate,
+  setQuestions,
+  updateAnswer,
+  finishInterview,
+  resetInterview,
 } = interviewSlice.actions;
 
 export default interviewSlice.reducer;
