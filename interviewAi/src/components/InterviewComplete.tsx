@@ -16,18 +16,18 @@ const InterviewComplete: React.FC<InterviewCompleteProps> = ({
   onRestart
 }) => {
   return (
-    <div style={{ maxWidth: 800, margin: '40px auto', padding: 20 }}>
+    <div className="max-w-full mx-auto my-10 px-5 text-white">
       <Result
-        icon={<CheckCircleOutlined style={{ color: '#52c41a' }} />}
-        title="Interview Completed!"
-        subTitle={`Thank you ${candidateName} for completing the interview.`}
+        icon={<CheckCircleOutlined className="text-green-500 text-4xl"/>}
+        title={<span className="text-white text-3xl font-bold">Interview Completed!</span>}
+        subTitle={<span className="text-white">Thank you {candidateName} for completing the interview.</span>}
         extra={[
           <Button type="primary" size="large" onClick={onRestart} key="restart">
             Start New Interview
           </Button>
         ]}
       >
-        <Card>
+        <Card className="mt-4">
           <Descriptions bordered column={1}>
             <Descriptions.Item label="Candidate Name">{candidateName}</Descriptions.Item>
             <Descriptions.Item label="Score">{score}/100</Descriptions.Item>

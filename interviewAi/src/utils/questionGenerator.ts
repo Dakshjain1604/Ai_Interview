@@ -6,13 +6,18 @@ export interface Question {
   time: number;
 }
 
+export interface EvaluationResult {
+  score: number;
+  summary: string;
+}
+
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true // Only for development
 });
 
 export const generateQuestions = async (): Promise<Question[]> => {
-  const prompt = `Generate exactly 6 technical interview questions about React and Node.js (full-stack development).
+  const prompt = `Generate exactly 6 technical interview questions about React and Node.js (full-stack development). The questions should be clear and have definitive technical answers.
 
 Requirements:
 - Mix of React and Node.js questions
@@ -44,16 +49,16 @@ Return ONLY a valid JSON array in this exact format, with no additional text:
         }
       ],
       temperature: 0.7,
-      max_tokens: 1000
+      max_tokens: 1000,
     });
 
     const content = response.choices[0].message.content;
-    if (!content) throw new Error('No response from OpenAI');
+    if (!content) {
+        throw new Error('No response from OpenAI');
+    }
 
-    // Parse the JSON response
     const questions = JSON.parse(content);
     
-    // Validate the response
     if (!Array.isArray(questions) || questions.length !== 6) {
       throw new Error('Invalid questions format');
     }
@@ -68,30 +73,29 @@ Return ONLY a valid JSON array in this exact format, with no additional text:
 export const evaluateInterview = async (
   questions: Question[],
   answers: string[]
-): Promise<{ score: number; summary: string }> => {
+): Promise<EvaluationResult> => {
   const qaList = questions.map((q, i) => ({
     question: q.text,
     level: q.level,
     answer: answers[i] || 'No answer provided'
   }));
 
-  const prompt = `Evaluate this React/Node.js technical interview performance:
+  const prompt = `Evaluate the following technical interview performance on React and Node.js.
 
+Interview Details:
 ${qaList.map((qa, i) => `
 Question ${i + 1} (${qa.level}): ${qa.question}
-Answer: ${qa.answer}
+Candidate's Answer: ${qa.answer}
 `).join('\n')}
 
-Provide:
-1. A score from 0-100 based on:
-   - Technical accuracy
-   - Depth of understanding
-   - Practical knowledge
-   - Communication clarity
-2. A brief summary (2-3 sentences) highlighting strengths and areas for improvement
+Instructions for Evaluation:
+1.  **If the answers are nonsensical, incomplete, or unrelated**, the score should be very low (e.g., 0-10).
+2.  Assess the candidate's answers based on **technical accuracy, depth, and clarity**.
+3.  Provide a score from 0-100.
+4.  Write a brief, honest summary (2-3 sentences) highlighting strengths and areas for improvement.
 
-Format your response as JSON:
-{"score": 85, "summary": "Your evaluation here"}`;
+Return a valid JSON object with the following format, with no other text:
+{"score": number, "summary": "string"}`;
 
   try {
     const response = await openai.chat.completions.create({
@@ -107,23 +111,31 @@ Format your response as JSON:
         }
       ],
       temperature: 0.3,
-      max_tokens: 500
+      max_tokens: 500,
     });
 
     const content = response.choices[0].message.content;
-    if (!content) throw new Error('No evaluation response');
+    if (!content) {
+        throw new Error('No evaluation response');
+    }
 
     const evaluation = JSON.parse(content);
+
+    // Validate the parsed object to ensure it has the correct properties
+    if (typeof evaluation.score !== 'number' || typeof evaluation.summary !== 'string') {
+        throw new Error('Invalid evaluation format from OpenAI');
+    }
+
     return {
-      score: evaluation.score || 0,
-      summary: evaluation.summary || 'Interview completed.'
+      score: evaluation.score,
+      summary: evaluation.summary
     };
   } catch (error) {
     console.error('Error evaluating interview:', error);
-    // Fallback evaluation
+    // Be transparent about the failure
     return {
-      score: Math.floor(Math.random() * 30) + 60,
-      summary: 'Interview completed. Candidate demonstrated understanding of React and Node.js concepts.'
+      score: 0,
+      summary: 'Evaluation failed due to an error. Please try again with valid answers.'
     };
   }
 };

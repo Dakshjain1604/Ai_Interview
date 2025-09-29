@@ -17,7 +17,7 @@ const CandidateSuccess: React.FC<CandidateSuccessProps> = ({
   onStartInterview,
 }) => {
   return (
-    <div className="px-6 py-8 max-w-3xl mx-auto">
+    <div className="w-full h-full px-6 py-8 max-w-3xl mx-auto">
       <div className="bg-white rounded-2xl shadow-md p-8 text-center">
         {/* Header */}
         <div className="flex flex-col items-center mb-6">

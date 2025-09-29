@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { Card, Upload, Button, Input, Form, Alert, Spin } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { parseResume } from '../utils/resumeParser';
+import type { ExtractedData } from '../utils/resumeParser';
 
-import  type {ExtractedData } from '../utils/resumeParser';
-
- interface ResumeUploadProps {
+interface ResumeUploadProps {
   onComplete: (data: ExtractedData) => void;
 }
 
@@ -41,15 +40,34 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onComplete }) => {
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: '40px auto', padding: 20 }}>
+    <div className="min-h-screen w-full bg-black relative">
+  {/* Diagonal Fade Center Grid Background */}
+  <div
+    className="absolute inset-0 z-0"
+    style={{
+      backgroundImage: `
+        linear-gradient(to right, #d1d5db 1px, transparent 1px),
+        linear-gradient(to bottom, #d1d5db 1px, transparent 1px)
+      `,
+      backgroundSize: "32px 32px",
+      WebkitMaskImage:
+         "radial-gradient(ellipse 60% 60% at 50% 50%, #000 30%, transparent 70%)",
+      maskImage:
+         "radial-gradient(ellipse 60% 60% at 50% 50%, #000 30%, transparent 70%)",
+    }}
+  />
+     <div className='h-screen w-screen flex flex-col justify-center items-center'>
+      <div className='text-8xl font-bold text-white z-50'>Let's See What You've Got !</div>
+      <div className="w-[400px] mx-auto my-10 px-5">
       <Card title="Upload Your Resume">
-        {error && <Alert message={error} type="error" closable onClose={() => setError(null)} style={{ marginBottom: 16 }} />}
+        {error && <Alert message={error} type="error" closable onClose={() => setError(null)} className="mb-4" />}
 
         <Upload.Dragger
           accept=".pdf,.doc,.docx,.txt"
           beforeUpload={handleUpload}
           maxCount={1}
           disabled={loading}
+          className="bg-gray-600 text-white border-gray-600 hover:bg-gray-700"
         >
           <p className="ant-upload-drag-icon"><InboxOutlined /></p>
           <p className="ant-upload-text">Click or drag resume to upload</p>
@@ -57,15 +75,15 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onComplete }) => {
         </Upload.Dragger>
 
         {loading && (
-          <div style={{ textAlign: 'center', margin: '20px 0' }}>
+          <div className="text-center my-5">
             <Spin size="large" />
             <p>Parsing resume...</p>
           </div>
         )}
 
         {extractedData && !loading && (
-          <Form form={form} layout="vertical" style={{ marginTop: 20 }}>
-            <Alert message="Please verify your information" type="info" style={{ marginBottom: 16 }} />
+          <Form form={form} layout="vertical" className="mt-5">
+            <Alert message="Please verify your information" type="info" className="mb-4" />
             
             <Form.Item label="Name" name="name" rules={[{ required: true }]}>
               <Input size="large" />
@@ -86,7 +104,32 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onComplete }) => {
         )}
       </Card>
     </div>
+    </div>
+    
+</div>
   );
 };
 
 export default ResumeUpload;
+
+
+
+
+<div className="min-h-screen w-full bg-white relative">
+  {/*  Diagonal Cross Grid Bottom Background */}
+  <div
+    className="absolute inset-0"
+    style={{
+      backgroundImage: `
+        linear-gradient(45deg, transparent 49%, #e5e7eb 49%, #e5e7eb 51%, transparent 51%),
+        linear-gradient(-45deg, transparent 49%, #e5e7eb 49%, #e5e7eb 51%, transparent 51%)
+      `,
+      backgroundSize: "40px 40px",
+       WebkitMaskImage:
+            "radial-gradient(ellipse 100% 80% at 50% 100%, #000 50%, transparent 90%)",
+          maskImage:
+            "radial-gradient(ellipse 100% 80% at 50% 100%, #000 50%, transparent 90%)",
+    }}
+  />
+  
+</div>

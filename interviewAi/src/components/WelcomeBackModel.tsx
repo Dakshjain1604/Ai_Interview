@@ -9,7 +9,6 @@ interface Props {
   onContinue: () => void;
   onRestart: () => void;
 }
-
 const WelcomeBackModal: React.FC<Props> = ({ onContinue, onRestart }) => {
   const [visible, setVisible] = useState(false);
   const currentCandidate = useSelector(
@@ -21,7 +20,6 @@ const WelcomeBackModal: React.FC<Props> = ({ onContinue, onRestart }) => {
       setVisible(true);
     }
   }, [currentCandidate]);
-
   return (
     <Modal
       open={visible}

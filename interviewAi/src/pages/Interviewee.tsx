@@ -6,7 +6,7 @@ import ResumeUpload from '../components/ResumeUpload';
 import GeneratingQuestions from '../components/GeneratingQuestions';
 import QuestionDisplay from '../components/QuestionDisplay';
 import InterviewComplete from '../components/InterviewComplete';
-import type { ExtractedData} from '../utils/resumeParser';
+import type { ExtractedData } from '../utils/resumeParser';
 import { generateQuestions, evaluateInterview } from '../utils/questionGenerator';
 import { saveToStorage } from '../utils/storage';
 import { message } from 'antd';
@@ -42,7 +42,6 @@ const Interviewee: React.FC = () => {
     
     dispatch(addCandidate(newCandidate));
     
-    // Automatically generate questions
     setCurrentStep('generating');
     
     try {
@@ -53,7 +52,6 @@ const Interviewee: React.FC = () => {
       setCurrentStep('interview');
     } catch (err) {
       message.error(err instanceof Error ? err.message : 'Failed to generate questions');
-      // Reset to upload step on error
       setCurrentStep('upload');
       dispatch(resetInterview());
     }
@@ -61,28 +59,30 @@ const Interviewee: React.FC = () => {
 
   const handleAnswer = async (answer: string) => {
     dispatch(updateAnswer({ questionIndex: currentQuestionIndex, answer }));
-    
+  
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      // Evaluate interview with AI
       setLoading(true);
-      
       try {
-        const answers = candidate?.answers || [];
-        answers[currentQuestionIndex] = answer;
-        
-        const evaluation = await evaluateInterview(questions, answers);
-        dispatch(finishInterview(evaluation));
-        
+
+        const updatedAnswers = [...(candidate?.answers || [])];
+        updatedAnswers[currentQuestionIndex] = answer;
+  
+        const evaluation = await evaluateInterview(questions, updatedAnswers);
+  
+        dispatch(finishInterview({
+          score: evaluation.score,
+          summary: evaluation.summary
+        }));
+  
         message.success('Interview completed! Check your results.');
         setCurrentStep('complete');
       } catch (err) {
         console.error('Evaluation error:', err);
-        // Fallback evaluation
         dispatch(finishInterview({
-          score: 75,
-          summary: 'Interview completed successfully. Demonstrated good understanding of React and Node.js fundamentals.'
+          score: 0,
+          summary: 'Evaluation failed due to an error. Please try again.'
         }));
         setCurrentStep('complete');
       } finally {
@@ -90,6 +90,7 @@ const Interviewee: React.FC = () => {
       }
     }
   };
+  
 
   const handleRestart = () => {
     dispatch(resetInterview());
@@ -112,6 +113,7 @@ const Interviewee: React.FC = () => {
         questionNumber={currentQuestionIndex + 1}
         totalQuestions={questions.length}
         onAnswer={handleAnswer}
+        // loading={loading}
       />
     );
   }

@@ -52,11 +52,11 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   };
 
   return (
-    <div style={{ maxWidth: 800, margin: '40px auto', padding: 20 }}>
+    <div className="max-w-full mx-auto my-10 px-5">
       <Card>
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3>Question {questionNumber} of {totalQuestions}</h3>
+        <div className="mb-5">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-semibold">Question {questionNumber} of {totalQuestions}</h3>
             <Tag color={levelColors[question.level]}>{question.level}</Tag>
           </div>
           <Progress 
@@ -64,13 +64,13 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
             showInfo={false}
             status={timeLeft < 10 ? 'exception' : 'active'}
           />
-          <p style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold' }}>
+          <p className="text-center text-lg font-bold mt-2">
             Time Left: {timeLeft}s
           </p>
         </div>
 
-        <div style={{ backgroundColor: '#f5f5f5', padding: 20, borderRadius: 8, marginBottom: 20 }}>
-          <p style={{ fontSize: 16, margin: 0 }}>{question.text}</p>
+        <div className="bg-gray-100 p-5 rounded-lg mb-5">
+          <p className="text-base m-0">{question.text}</p>
         </div>
 
         <Input.TextArea
@@ -78,7 +78,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
           onChange={(e) => setAnswer(e.target.value)}
           placeholder="Type your answer here..."
           rows={6}
-          style={{ marginBottom: 16 }}
+          className="mb-4"
         />
 
         <Button type="primary" size="large" block onClick={handleSubmit}>

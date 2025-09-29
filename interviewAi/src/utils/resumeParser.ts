@@ -1,9 +1,8 @@
 import * as mammoth from 'mammoth';
 import * as pdfjsLib from 'pdfjs-dist';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
-// Set up PDF.js worker (do this once in your app)
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 export interface ExtractedData {
   name: string;
   email: string;
@@ -11,10 +10,7 @@ export interface ExtractedData {
   fullText: string;
 }
 
-/**
- * Main function to parse a resume file
- * Supports PDF, Word (.docx), and plain text
- */
+
 export const parseResume = async (file: File): Promise<ExtractedData> => {
   let text = '';
 

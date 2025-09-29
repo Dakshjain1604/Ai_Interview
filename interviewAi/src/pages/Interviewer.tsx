@@ -1,10 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../redux/store';
-import { Card, Table, Tag, Empty, Statistic, Row, Col } from 'antd';
-import { UserOutlined, CheckCircleOutlined, ClockCircleOutlined, CodeOutlined } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/es/table';
-import type { Candidate } from '../redux/slices/interviewSlice';
+import { UserOutlined, CheckCircleOutlined, ClockCircleOutlined} from '@ant-design/icons';
+
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const Interviewer: React.FC = () => {
   const candidates = useSelector((state: RootState) => state.interview.candidates);
@@ -15,154 +14,133 @@ const Interviewer: React.FC = () => {
     ? Math.round(completedCandidates.reduce((sum, c) => sum + (c.score || 0), 0) / completedCandidates.length)
     : 0;
 
-  const columns: ColumnsType<Candidate> = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text) => <strong>{text}</strong>
-    },
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
-      title: 'Phone',
-      dataIndex: 'phone',
-      key: 'phone',
-      render: (phone) => phone || '-'
-    },
-    {
-      title: 'Score',
-      dataIndex: 'score',
-      key: 'score',
-      sorter: (a, b) => (a.score || 0) - (b.score || 0),
-      render: (score) => {
-        if (score === null) return <Tag color="orange">In Progress</Tag>;
-        
-        const color = score >= 80 ? 'green' : score >= 60 ? 'orange' : 'red';
-        return <Tag color={color} style={{ fontSize: 14, padding: '4px 12px' }}>{score}/100</Tag>;
-      }
-    },
-    {
-      title: 'Status',
-      key: 'status',
-      render: (_, record) => (
-        record.score !== null ? (
-          <Tag icon={<CheckCircleOutlined />} color="success">Completed</Tag>
-        ) : (
-          <Tag icon={<ClockCircleOutlined />} color="processing">In Progress</Tag>
-        )
-      )
-    },
-    {
-      title: 'Completed At',
-      dataIndex: 'completedAt',
-      key: 'completedAt',
-      render: (date) => date ? new Date(date).toLocaleString() : '-'
-    }
-  ];
-
-  const expandedRowRender = (record: Candidate) => {
-    return (
-      <div style={{ padding: '16px', backgroundColor: '#fafafa', borderRadius: 8 }}>
-        <Row gutter={16}>
-          <Col span={24}>
-            <Card size="small" title="AI Evaluation Summary" style={{ marginBottom: 16 }}>
-              <p style={{ fontSize: 14, lineHeight: 1.6 }}>
-                {record.summary || 'No summary available'}
-              </p>
-            </Card>
-          </Col>
-        </Row>
-        
-        <Card size="small" title="Interview Questions & Answers">
-          {record.answers.length > 0 ? (
-            <div>
-              {questions.map((question, index) => (
-                <div key={index} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #f0f0f0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <strong>Question {index + 1}</strong>
-                    <Tag color={question.level === 'Easy' ? 'green' : question.level === 'Medium' ? 'orange' : 'red'}>
-                      {question.level}
-                    </Tag>
-                  </div>
-                  <p style={{ color: '#666', marginBottom: 8 }}>{question.text}</p>
-                  <div style={{ backgroundColor: '#fff', padding: 12, borderRadius: 4, border: '1px solid #e8e8e8' }}>
-                    <strong>Answer:</strong>
-                    <p style={{ margin: '8px 0 0 0' }}>
-                      {record.answers[index] || <em style={{ color: '#999' }}>No answer provided</em>}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <Empty description="No answers recorded yet" />
-          )}
-        </Card>
-      </div>
-    );
-  };
+  const chartData = completedCandidates.map((candidate, index) => ({
+    name: candidate.name.split(' ')[0],
+    score: candidate.score || 0,
+    index: index + 1
+  }));
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ marginBottom: 8 }}>Interview Dashboard</h1>
-        <p style={{ color: '#666' }}>
-          <CodeOutlined /> React & Node.js Technical Interviews
+    <div className="p-5 min-h-screen w-screen mx-auto text-black">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2 text-white">Interview Dashboard</h1>
+        <p className="text-gray-500 flex items-center gap-2">
+            React & Node.js Technical Interviews
         </p>
       </div>
-      
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={8}>
-          <Card>
-            <Statistic
-              title="Total Candidates"
-              value={candidates.length}
-              prefix={<UserOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <Statistic
-              title="Completed Interviews"
-              value={completedCandidates.length}
-              prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#3f8600' }}
-            />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <Statistic
-              title="Average Score"
-              value={averageScore}
-              suffix="/ 100"
-              valueStyle={{ color: averageScore >= 70 ? '#3f8600' : '#cf1322' }}
-            />
-          </Card>
-        </Col>
-      </Row>
 
-      <Card title="All Candidates">
+      {/* Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white shadow rounded p-4 flex flex-col items-center">
+          <UserOutlined className="text-2xl text-red-600 mb-2 stroke-red-600" />
+          <p className="text-gray-500">Total Candidates</p>
+          <p className="text-xl font-bold">{candidates.length}</p>
+        </div>
+        <div className="bg-white shadow rounded p-4 flex flex-col items-center">
+          <CheckCircleOutlined className="text-2xl text-green-600 mb-2" />
+          <p className="text-gray-500">Completed Interviews</p>
+          <p className="text-xl font-bold text-green-600">{completedCandidates.length}</p>
+        </div>
+        <div className="bg-white shadow rounded p-4 flex flex-col items-center">
+          <p className="text-gray-500">Average Score</p>
+          <p className={`text-xl font-bold ${averageScore >= 70 ? 'text-green-600' : 'text-red-600'}`}>
+            {averageScore} / 100
+          </p>
+        </div>
+        <div className="bg-white shadow rounded p-4 flex flex-col items-center">
+          <ClockCircleOutlined className="text-2xl text-blue-600 mb-2" />
+          <p className="text-gray-500">In Progress</p>
+          <p className="text-xl font-bold text-blue-600">{candidates.length - completedCandidates.length}</p>
+        </div>
+      </div>
+
+      {/* Charts */}
+      {chartData.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="text-lg font-semibold mb-2">Score Distribution</h2>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis domain={[0, 100]} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="score" fill="#1890ff" name="Score" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="text-lg font-semibold mb-2">Score Trend</h2>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis domain={[0, 100]} />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="score" stroke="#52c41a" strokeWidth={2} name="Score" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* Candidates Table */}
+      <div className="bg-white shadow rounded p-4">
+        <h2 className="text-lg font-semibold mb-4">All Candidates</h2>
         {candidates.length === 0 ? (
-          <Empty 
-            description="No candidates yet. Start an interview to see data here."
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
+          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <p>No candidates yet. Start an interview to see data here.</p>
+          </div>
         ) : (
-          <Table
-            columns={columns}
-            dataSource={candidates}
-            rowKey="id"
-            expandable={{ expandedRowRender }}
-            pagination={{ pageSize: 10 }}
-          />
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Name</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Phone</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Score</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Status</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Completed At</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {candidates.map(candidate => (
+                  <tr key={candidate.id}>
+                    <td className="px-4 py-2 font-semibold">{candidate.name}</td>
+                    <td className="px-4 py-2">{candidate.email}</td>
+                    <td className="px-4 py-2">{candidate.phone || '-'}</td>
+                    <td className="px-4 py-2">
+                      {candidate.score === null ? (
+                        <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded text-sm">In Progress</span>
+                      ) : (
+                        <span className={`px-2 py-1 rounded text-sm ${candidate.score >= 80 ? 'bg-green-200 text-green-800' : candidate.score >= 60 ? 'bg-yellow-200 text-yellow-800' : 'bg-red-200 text-red-800'}`}>
+                          {candidate.score}/100
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2">
+                      {candidate.score !== null ? (
+                        <span className="flex items-center gap-1 text-green-600">
+                          <CheckCircleOutlined /> Completed
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-blue-600">
+                          <ClockCircleOutlined /> In Progress
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2">{candidate.completedAt ? new Date(candidate.completedAt).toLocaleString() : '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 };

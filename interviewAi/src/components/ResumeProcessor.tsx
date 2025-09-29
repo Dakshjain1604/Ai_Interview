@@ -32,9 +32,8 @@ const ResumeProcessor: React.FC<ResumeProcessorProps> = ({
     if (fileType.includes("text")) return "Text File";
     return "Document";
   };
-
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 mt-6">
+    <div className=" max-h-[800px] bg-white rounded-2xl shadow-md p-6 mt-6">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">Process Resume</h2>
 
       <div className="mb-4">
