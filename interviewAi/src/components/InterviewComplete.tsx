@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Result, Button, Descriptions } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
 interface InterviewCompleteProps {
   candidateName: string;
@@ -35,6 +36,7 @@ const InterviewComplete: React.FC<InterviewCompleteProps> = ({
           </Descriptions>
         </Card>
       </Result>
+      <div  className='flex items-center justify-center '><Link to='/interviewer' className="bg-green-400 px-4 py-2 rounded-md text-black animate-bounce ">Go to DashBoard !</Link></div>
     </div>
   );
 };
