@@ -71,7 +71,19 @@ const extractPersonalInfo = (text: string): ExtractedData => {
   let name = '';
 
   for (const line of lines.slice(0, 10)) {
-    if (/^[A-Z][a-z]+(\s+[A-Z][a-z]+){1,3}$/.test(line) && line.length < 50) {
+    // Pattern for Indian names:
+    // - Single names (Ramesh, Priya)
+    // - Multiple parts (Amit Kumar Singh, Priya Sharma)
+    // - Names with periods (S. Ramesh, A.K. Singh)
+    // - Mixed case (like surnames: KumarRao)
+    const namePattern = /^[A-Z][A-Za-z\.]*(\s+[A-Z][A-Za-z\.]*){0,4}$/;
+    
+    if (namePattern.test(line) && 
+        line.length >= 2 && 
+        line.length < 50 &&
+        !line.includes('@') && // Exclude emails
+        !/\d/.test(line) && // Exclude any digits
+        !/^[A-Z\s\.]+$/.test(line)) { // Exclude all caps (likely headers)
       name = line;
       break;
     }

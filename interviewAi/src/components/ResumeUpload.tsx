@@ -3,6 +3,7 @@ import { Card, Upload, Button, Input, Form, Alert, Spin } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { parseResume } from '../utils/resumeParser';
 import type { ExtractedData } from '../utils/resumeParser';
+import { Link } from 'react-router-dom';
 
 interface ResumeUploadProps {
   onComplete: (data: ExtractedData) => void;
@@ -41,7 +42,7 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onComplete }) => {
 
   return (
     <div className="min-h-screen w-full bg-black relative">
-  {/* Diagonal Fade Center Grid Background */}
+ 
   <div
     className="absolute inset-0 z-0"
     style={{
@@ -56,6 +57,10 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onComplete }) => {
          "radial-gradient(ellipse 60% 60% at 50% 50%, #000 30%, transparent 70%)",
     }}
   />
+      <nav className='flex z-20 relative pt-5 pl-10 top-0 left-0 gap-5'>
+        <Link to='/'className='  bg-black text-white border-1 border-white p-2 rounded-xl' >Home </Link>
+        <Link to='/interviewer'className='  bg-black text-white border-1 border-white p-2 rounded-xl' >DashBoard</Link>
+      </nav>
      <div className='h-screen w-screen flex flex-col justify-center items-center'>
       <div className='text-8xl font-bold text-white z-50'>Let's See What You've Got !</div>
       <div className="w-[400px] mx-auto my-10 px-5">
@@ -73,6 +78,7 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onComplete }) => {
           <p className="ant-upload-text">Click or drag resume to upload</p>
           <p className="ant-upload-hint">Supports PDF, DOC, DOCX, TXT</p>
         </Upload.Dragger>
+       
 
         {loading && (
           <div className="text-center my-5">
@@ -105,7 +111,7 @@ const ResumeUpload: React.FC<ResumeUploadProps> = ({ onComplete }) => {
       </Card>
     </div>
     </div>
-    
+ 
 </div>
   );
 };

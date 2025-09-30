@@ -4,10 +4,11 @@ import type { RootState } from '../redux/store';
 import { UserOutlined, CheckCircleOutlined, ClockCircleOutlined} from '@ant-design/icons';
 
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Link } from 'react-router-dom';
 
 const Interviewer: React.FC = () => {
   const candidates = useSelector((state: RootState) => state.interview.candidates);
-  const questions = useSelector((state: RootState) => state.interview.questions);
+  // const questions = useSelector((state: RootState) => state.interview.questions);
 
   const completedCandidates = candidates.filter(c => c.score !== null);
   const averageScore = completedCandidates.length > 0
@@ -21,7 +22,11 @@ const Interviewer: React.FC = () => {
   }));
 
   return (
-    <div className="p-5 min-h-screen w-screen mx-auto text-black">
+    <div className="px-10 min-h-screen w-screen mx-auto text-black ">
+      <nav className='flex z-20 relative pt-5 top-0 left-0 gap-5 '>
+        <Link to='/'className='  bg-black text-white border-1 border-white p-2 rounded-xl ' >Home </Link>
+        <Link to='/interviewee'className='  bg-black text-white border-1 border-white p-2 rounded-xl' >New Interview</Link>
+      </nav>
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2 text-white">Interview Dashboard</h1>
@@ -42,7 +47,7 @@ const Interviewer: React.FC = () => {
           <p className="text-gray-500">Completed Interviews</p>
           <p className="text-xl font-bold text-green-600">{completedCandidates.length}</p>
         </div>
-        <div className="bg-white shadow rounded p-4 flex flex-col items-center">
+        <div className="bg-white shadow rounded p-4 flex flex-col items-center justify-center">
           <p className="text-gray-500">Average Score</p>
           <p className={`text-xl font-bold ${averageScore >= 70 ? 'text-green-600' : 'text-red-600'}`}>
             {averageScore} / 100

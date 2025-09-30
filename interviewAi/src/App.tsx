@@ -1,17 +1,22 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
-import Interviewee from './pages/Interviewee';
-import Interviewer from './pages/Interviewer';
+import { Suspense, lazy } from 'react';
+
+// lazy imports
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const Interviewee = lazy(() => import('./pages/Interviewee'));
+const Interviewer = lazy(() => import('./pages/Interviewer'));
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/interviewee" element={<Interviewee />} />
-        <Route path="/interviewer" element={<Interviewer />} />
-      </Routes>
+      <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/interviewee" element={<Interviewee />} />
+          <Route path="/interviewer" element={<Interviewer />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

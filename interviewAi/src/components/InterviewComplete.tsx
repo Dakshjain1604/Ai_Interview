@@ -16,7 +16,7 @@ const InterviewComplete: React.FC<InterviewCompleteProps> = ({
   onRestart
 }) => {
   return (
-    <div className="max-w-full mx-auto my-10 px-5 text-white">
+    <div className="w-screen mx-auto my-10 px-5 text-white">
       <Result
         icon={<CheckCircleOutlined className="text-green-500 text-4xl"/>}
         title={<span className="text-white text-3xl font-bold">Interview Completed!</span>}

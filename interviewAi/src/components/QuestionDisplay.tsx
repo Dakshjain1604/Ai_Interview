@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, Input, Button, Progress, Tag } from 'antd';
 
 interface Question {
@@ -11,7 +11,7 @@ interface QuestionDisplayProps {
   question: Question;
   questionNumber: number;
   totalQuestions: number;
-  onAnswer: (answer: string) => void;
+  onAnswer: (answer: string) => Promise<void> | void; // support async
 }
 
 const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
@@ -22,6 +22,12 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
 }) => {
   const [answer, setAnswer] = useState('');
   const [timeLeft, setTimeLeft] = useState(question.time);
+  const [loading, setLoading] = useState(false); // 🔹 loading state added
+  const answerRef = useRef(answer);
+
+  useEffect(() => {
+    answerRef.current = answer;
+  }, [answer]);
 
   useEffect(() => {
     setTimeLeft(question.time);
@@ -30,7 +36,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
 
   useEffect(() => {
     if (timeLeft <= 0) {
-      onAnswer(answer);
+      handleSubmit();
       return;
     }
 
@@ -39,52 +45,56 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, answer, onAnswer]);
+  }, [timeLeft]);
 
-  const handleSubmit = () => {
-    onAnswer(answer);
+  const handleSubmit = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      await onAnswer(answerRef.current);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const levelColors = {
+  const levelColors: Record<Question['level'], string> = {
     Easy: 'green',
     Medium: 'orange',
     Hard: 'red'
   };
 
   return (
-    <div className="max-w-full mx-auto my-10 px-5">
+    <div className='w-screen px-20'>
+      <h3 className='text-3xl font-bold mb-5 animate'>total questions : 6</h3>
       <Card>
-        <div className="mb-5">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold">Question {questionNumber} of {totalQuestions}</h3>
-            <Tag color={levelColors[question.level]}>{question.level}</Tag>
-          </div>
-          <Progress 
-            percent={(timeLeft / question.time) * 100} 
-            showInfo={false}
-            status={timeLeft < 10 ? 'exception' : 'active'}
-          />
-          <p className="text-center text-lg font-bold mt-2">
-            Time Left: {timeLeft}s
-          </p>
-        </div>
+      <div className=" flex justify-between items-center mb-2">
+        <h3>Question {questionNumber} of {totalQuestions}</h3>
+        <Tag color={levelColors[question.level]}>{question.level}</Tag>
+      </div>
 
-        <div className="bg-gray-100 p-5 rounded-lg mb-5">
-          <p className="text-base m-0">{question.text}</p>
-        </div>
+      <Progress percent={(timeLeft / question.time) * 100} showInfo={false} />
+      <p className="mt-2 text-red-500">Time Left: {timeLeft}s</p>
 
-        <Input.TextArea
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          placeholder="Type your answer here..."
-          rows={6}
-          className="mb-4"
-        />
+      <p className="mt-4">{question.text}</p>
 
-        <Button type="primary" size="large" block onClick={handleSubmit}>
-          {questionNumber === totalQuestions ? 'Finish Interview' : 'Next Question'}
-        </Button>
-      </Card>
+      <Input.TextArea
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+        placeholder="Type your answer here..."
+        rows={6}
+        className="mb-4"
+      />
+
+      <Button
+       className='mt-10'
+        type="primary"
+        onClick={handleSubmit}
+        loading={loading} // 🔹 show loading on button
+        block
+      >
+        {questionNumber === totalQuestions ? 'Finish Interview' : 'Next Question'}
+      </Button>
+    </Card>
     </div>
   );
 };

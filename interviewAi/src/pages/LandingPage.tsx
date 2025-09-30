@@ -24,13 +24,11 @@ const LandingPage = () => {
   </div>
 </nav>
     <div className="mt-60 w-full">
-      <h2 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-primary md:text-4xl lg:text-7xl dark:text-dark-primary">
-        Interactive Background Boxes Ripple Effect
+      <h2 className="relative z-30 mx-auto max-w-4xl text-center text-2xl font-bold text-primary md:text-4xl lg:text-7xl dark:text-dark-primary shadow-white shadow-2xl">
+      Master the Art of Interviews – Both Sides of the Table
       </h2>
       <p className="relative z-10 mx-auto mt-4 max-w-xl text-center text-white dark:text-neutral-500">
-        Hover over the boxes above and click.To be used on backgrounds of hero
-        sections OR Call to Action sections. I beg you don&apos;t use it
-        everywhere.
+      Whether you’re looking to ace your next interview or find the perfect candidate, we’ve got you covered
       </p>
       <div className='flex justify-center mt-10 gap-4 text-black relative z-25'><Button size='large' className='hover:scale-105 border-none outline-none hover:text-black hover:border-none' onClick={()=>{
           navigate('/interviewee')
